@@ -1,0 +1,227 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+
+\geometry{
+    a4paper,
+    left=30mm,
+    right=20mm,
+    top=25mm,
+    bottom=25mm
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\renewcommand{\baselinestretch}{1.3}
+
+\title{\textbf{CAD DATA ANALYSIS, THEORETICAL BACKGROUND, \\ AND PRE-SIMULATION CALCULATIONS (PRE-ANALYSIS)}}
+\author{Course Project: Numerical Methods (FEM)}
+\date{November 11, 2026}
+
+\begin{document}
+
+\maketitle
+
+\section{CAD Design Data Analysis}
+
+\subsection{Component 1: Hexagon Head Screw (Hex Bolt)}
+Based on the engineering drawing \texttt{BOLT-M10-030} and the 3D CAD model \texttt{bolt.ipt}, the geometric and material specifications of the bolt are defined as follows:
+\begin{itemize}
+    \item \textbf{Manufacturing Standard:} ISO 4017 -- Metric thread $M10 \times 30$ (full thread, pitch $p = 1.5\text{ mm}$, tolerance class $6g$, right-hand thread).
+    \item \textbf{Hexagon Head Dimensions:} Width across flats (A/F) $s = 16.00\text{ mm}$, head height $k = 6.40\text{ mm}$.
+    \item \textbf{Shank Dimensions:} Under-head length $l = 30.00\text{ mm}$, thread end chamfer $1 \times 45^\circ$.
+    \item \textbf{Material and Property Class:} Quenched and tempered carbon steel, \textbf{Property Class 8.8} per ISO 898-1:
+    \begin{itemize}
+        \item Young's modulus: $E_{\text{bolt}} = 210\text{ GPa} = 210,000\text{ MPa}$.
+        \item Poisson's ratio: $\nu_{\text{bolt}} = 0.30$.
+        \item Nominal ultimate tensile strength: $\sigma_{u,\text{bolt}} = 800\text{ MPa}$.
+        \item Nominal yield strength: $\sigma_{y,\text{bolt}} = 0.8 \times \sigma_{u,\text{bolt}} = 640\text{ MPa}$.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Component 2: 16 mm Combination Wrench}
+Based on the engineering drawing \texttt{WR-016-200} and the 3D CAD model \texttt{wrench\_16mm.ipt}, the geometric and material specifications of the wrench are defined as follows:
+\begin{itemize}
+    \item \textbf{Overall Dimensions and Thickness:} Uniform body thickness $t = 6.50\text{ mm}$ ($Z \in [0; 6.50]\text{ mm}$), overall nominal length $L_{\text{total}} = 199.55\text{ mm}$, center-to-center distance $L_{cc} = 169.00\text{ mm}$, calculated mass $m = 148.7\text{ g}$.
+    \item \textbf{Six-Point Ring Head:} Centered at coordinates $(14, 0)\text{ mm}$, outer radius $R_{\text{ring}} = 14.00\text{ mm}$. Regular six-point hexagon opening with width across flats $A/F = 16.10^{+0.05}_{-0.00}\text{ mm}$ (nominal clearance with the bolt head $\Delta = 0.10\text{ mm}$).
+    \item \textbf{Open Jaw Head:} Centered at coordinates $(183, 0)\text{ mm}$, outer radius $R_{\text{open}} = 17.00\text{ mm}$. Jaw opening $16.10\text{ mm}$ oriented at $15^\circ$ in the $XY$ plane, with a semicircular root radius $R_{\text{root}} = 8.05\text{ mm}$ centered at local coordinates $(-3, 0)\text{ mm}$.
+    \item \textbf{Shank Profile:} The upper boundary connects points $(14, 14) \rightarrow (37, 7) \rightarrow (160, 7) \rightarrow (175, 15)\text{ mm}$ and is mirrored across the centerline $Y = 0$. The straight shank width is $w = 14.00\text{ mm}$, with transition fillet radii $R = 3.00\text{ mm}$ at $(37, \pm 7)\text{ mm}$ and $(160, \pm 7)\text{ mm}$.
+    \item \textbf{Material and Heat Treatment:} Chromium-Vanadium alloy steel \textbf{AISI 6150 Cr-V}, quenched and tempered to $44\text{--}48\text{ HRC}$, with a satin nickel/chrome finish:
+    \begin{itemize}
+        \item Density: $\rho = 7850\text{ kg/m}^3$.
+        \item Young's modulus: $E_{\text{wrench}} = 210\text{ GPa} = 210,000\text{ MPa}$.
+        \item Poisson's ratio: $\nu_{\text{wrench}} = 0.30$.
+        \item Reference yield strength at $44\text{--}48\text{ HRC}$: $\sigma_{y,\text{wrench}} \approx 1300\text{ MPa}$.
+    \end{itemize}
+\end{itemize}
+
+\begin{table}[h!]
+\centering
+\caption{Summary of material properties for FEM simulation}
+\vspace{4pt}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Component} & \textbf{Material} & \textbf{$E$ (MPa)} & \textbf{$\nu$} & \textbf{$\sigma_y$ (MPa)} \\ \midrule
+Hex Bolt $M10 \times 30$ & Carbon Steel Class 8.8 (ISO 898-1) & $210,000$ & $0.30$ & $640$ \\
+16 mm Wrench & AISI 6150 Cr-V Steel (44--48 HRC) & $210,000$ & $0.30$ & $1300$ \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\section{Theoretical Background and Pre-Simulation Calculations}
+
+\subsection{Standard Tightening Torque for $M10 \times 1.5$ Bolt}
+According to ISO metric thread standards, the pitch diameter $d_2$ and minor diameter $d_3$ of an $M10 \times 1.5$ thread ($d = 10\text{ mm}$, $p = 1.5\text{ mm}$) are given by:
+\begin{align}
+    d_2 &= d - 0.6495p = 10 - 0.6495 \times 1.5 = 9.026\text{ mm} \\
+    d_3 &= d - 1.2268p = 10 - 1.2268 \times 1.5 = 8.160\text{ mm}
+\end{align}
+
+The nominal tensile stress area $A_s$ of the threaded section is:
+\begin{equation}
+    A_s = \frac{\pi}{4} \left( \frac{d_2 + d_3}{2} \right)^2 = \frac{\pi}{4} \left( \frac{9.026 + 8.160}{2} \right)^2 \approx 58.0\text{ mm}^2
+\end{equation}
+
+When tightening a Property Class 8.8 bolt ($\sigma_{y,\text{bolt}} = 640\text{ MPa}$) to $70\%$ of its yield strength in accordance with standard mechanical assembly guidelines, the assembly preload force $F_M$ is:
+\begin{equation}
+    F_M = 0.7 \cdot \sigma_{y,\text{bolt}} \cdot A_s = 0.7 \times 640 \times 58.0 = 25,984\text{ N} \approx 26.0\text{ kN}
+\end{equation}
+
+Assuming a nut factor (torque coefficient) $K = 0.19$ for standard steel-on-steel fastener surfaces, the nominal tightening torque $T_{\text{nom}}$ required at the bolt head is:
+\begin{equation}
+    T_{\text{nom}} = K \cdot d \cdot F_M = 0.19 \times 0.010\text{ m} \times 25,984\text{ N} \approx 49.37\text{ N}\cdot\text{m} \approx 50\text{ N}\cdot\text{m}
+\end{equation}
+
+\subsection{Formulation of Applied Load Cases}
+Assuming the operator engages the six-point ring head of the wrench (centered at $x_{\text{ring}} = 14\text{ mm}$) onto the bolt head and applies a perpendicular hand force at the open-jaw end (centered at $x_{\text{open}} = 183\text{ mm}$), the effective moment arm is:
+\begin{equation}
+    L_{cc} = x_{\text{open}} - x_{\text{ring}} = 183 - 14 = 169\text{ mm} = 0.169\text{ m}
+\end{equation}
+
+The relationship between the applied hand force $F_{\text{hand}}$ and the resulting torque $T$ is:
+\begin{equation}
+    F_{\text{hand}} = \frac{T}{L_{cc}}
+\end{equation}
+
+\begin{table}[h!]
+\centering
+\caption{Load cases analyzed in the FEM simulation}
+\vspace{4pt}
+\begin{tabular}{@{}clccc@{}}
+\toprule
+\textbf{Load Case} & \textbf{Operating Condition} & \textbf{Torque $T$ ($\text{N}\cdot\text{m}$)} & \textbf{Torque $T$ ($\text{N}\cdot\text{mm}$)} & \textbf{Hand Force $F_{\text{hand}}$ (N)} \\ \midrule
+Case 1 & Light tightening ($60\%$ rated torque) & $30.0$ & $30,000$ & $177.5$ \\
+Case 2 & Standard Class 8.8 tightening & $50.0$ & $50,000$ & $295.9$ \\
+Case 3 & Peak overload / Seized bolt breakaway & $80.0$ & $80,000$ & $473.4$ \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Analytical Verification via Mechanics of Materials}
+
+\subsubsection{Nominal Bending Stress in the Wrench Shank}
+Consider the critical cross-section at the transition between the wrench shank and the ring head ($x = 37\text{ mm}$, where the shank width is $w = 14.0\text{ mm}$, thickness $t = 6.5\text{ mm}$, and fillet radius $R = 3.0\text{ mm}$). The moment arm from the applied hand load ($x = 183\text{ mm}$) to this cross-section is:
+\begin{equation}
+    L_b = 183 - 37 = 146\text{ mm}
+\end{equation}
+
+The area moment of inertia $I_z$ and elastic section modulus $W_z$ of the rectangular cross-section $t \times w$ are:
+\begin{align}
+    I_z &= \frac{t \cdot w^3}{12} = \frac{6.5 \times 14.0^3}{12} \approx 1486.33\text{ mm}^4 \\
+    W_z &= \frac{t \cdot w^2}{6} = \frac{6.5 \times 14.0^2}{6} \approx 212.33\text{ mm}^3
+\end{align}
+
+Under the standard load case $T_2 = 50\text{ N}\cdot\text{m}$ ($F_2 = 295.9\text{ N}$), the bending moment at $x = 37\text{ mm}$ and the maximum nominal bending stress at the outer fibers ($y = \pm 7\text{ mm}$) are:
+\begin{align}
+    M_b &= F_2 \cdot L_b = 295.9 \times 146 = 43,201.4\text{ N}\cdot\text{mm} \\
+    \sigma_{\text{nom}} &= \frac{M_b}{W_z} = \frac{43,201.4}{212.33} \approx 203.46\text{ MPa}
+\end{align}
+
+Accounting for geometric stress concentration at the transition fillet $R = 3\text{ mm}$ ($R/w = 3/14 \approx 0.214$), the theoretical stress concentration factor is $K_t \approx 1.45\text{--}1.60$. Thus, the expected peak local stress at the wrench neck is:
+\begin{equation}
+    \sigma_{\max,\text{theory}} = K_t \cdot \sigma_{\text{nom}} \approx (1.45 \div 1.60) \times 203.46 \approx 295 \div 325\text{ MPa}
+\end{equation}
+
+Approximating the shank as a cantilever beam of length $L_b = 146\text{ mm}$, the tip deflection contribution of the shank is:
+\begin{equation}
+    u_{y,\text{shank}} = \frac{F_2 \cdot L_b^3}{3 E_{\text{wrench}} I_z} = \frac{295.9 \times 146^3}{3 \times 210,000 \times 1486.33} \approx 0.984\text{ mm}
+\end{equation}
+
+\subsubsection{Torsional Shear Stress in the Bolt Shank}
+Under pure torsion $T_2 = 50,000\text{ N}\cdot\text{mm}$ acting on the equivalent stress diameter of the bolt shank $d_s = (d_2 + d_3)/2 \approx 8.60\text{ mm}$, the polar section modulus $W_p$ and maximum torsional shear stress $\tau_{\max}$ are:
+\begin{align}
+    W_p &= \frac{\pi d_s^3}{16} = \frac{\pi \times 8.60^3}{16} \approx 124.89\text{ mm}^3 \\
+    \tau_{\max} &= \frac{T_2}{W_p} = \frac{50,000}{124.89} \approx 400.35\text{ MPa}
+\end{align}
+
+The corresponding theoretical Von Mises stress on the outer surface of the bolt shank under pure torsion is:
+\begin{equation}
+    \sigma_{\text{vM, shank}} = \sqrt{3} \, \tau_{\max} \approx 693.4\text{ MPa}
+\end{equation}
+
+\subsection{Solid Mechanics Governing Equations and Finite Element Formulation (FEniCS)}
+
+\subsubsection{Governing Differential Equations (Strong Form)}
+Consider a linear elastic, isotropic solid occupying a spatial domain $\Omega \subset \mathbb{R}^3$ with boundary $\partial\Omega = \Gamma_D \cup \Gamma_N$. Neglecting body forces ($\mathbf{f} = \mathbf{0}$), the static equilibrium equation is given by:
+\begin{equation}
+    -\nabla \cdot \boldsymbol{\sigma}(\mathbf{u}) = \mathbf{0} \quad \text{in } \Omega
+\end{equation}
+
+The infinitesimal Cauchy strain tensor $\boldsymbol{\varepsilon}(\mathbf{u})$ is related to the displacement vector $\mathbf{u} = (u_x, u_y, u_z)^T$ by:
+\begin{equation}
+    \boldsymbol{\varepsilon}(\mathbf{u}) = \frac{1}{2} \left( \nabla\mathbf{u} + (\nabla\mathbf{u})^T \right)
+\end{equation}
+
+The constitutive equation (generalized Hooke's law) for a linear elastic isotropic material is:
+\begin{equation}
+    \boldsymbol{\sigma}(\mathbf{u}) = \lambda \, \text{tr}(\boldsymbol{\varepsilon}(\mathbf{u})) \mathbf{I} + 2\mu \, \boldsymbol{\varepsilon}(\mathbf{u})
+\end{equation}
+where $\mathbf{I}$ is the second-order identity tensor, and $\lambda, \mu$ are the Lam\'e parameters expressed in terms of Young's modulus $E$ and Poisson's ratio $\nu$:
+\begin{equation}
+    \lambda = \frac{E\nu}{(1 + \nu)(1 - 2\nu)}, \qquad \mu = G = \frac{E}{2(1 + \nu)}
+\end{equation}
+
+For $E = 210,000\text{ MPa}$ and $\nu = 0.30$:
+\begin{equation}
+    \lambda = 121,153.85\text{ MPa}, \qquad \mu = 80,769.23\text{ MPa}
+\end{equation}
+
+The boundary conditions on $\partial\Omega$ are prescribed as:
+\begin{align}
+    \mathbf{u} &= \mathbf{0} \quad \text{on the Dirichlet boundary } \Gamma_D \text{ (fixed/constrained contact surfaces)} \\
+    \boldsymbol{\sigma}(\mathbf{u}) \cdot \mathbf{n} &= \mathbf{t} \quad \text{on the Neumann boundary } \Gamma_N \text{ (applied surface traction)}
+\end{align}
+
+\subsubsection{Variational Formulation (Weak Form) in FEniCSx}
+Let $V = \{ \mathbf{v} \in [H^1(\Omega)]^3 \mid \mathbf{v}|_{\Gamma_D} = \mathbf{0} \}$ denote the trial and test function space discretized using quadratic Lagrange tetrahedral elements ($\mathcal{P}_2$ -- equivalent to 10-node \texttt{C3D10} elements). Multiplying the equilibrium equation by a test function $\mathbf{v} \in V$ and integrating by parts via the Gauss--Green divergence theorem over $\Omega$ yields the variational problem:
+
+Find $\mathbf{u} \in V$ such that $\forall \mathbf{v} \in V$:
+\begin{equation}
+    a(\mathbf{u}, \mathbf{v}) = L(\mathbf{v})
+\end{equation}
+where the bilinear form $a(\mathbf{u}, \mathbf{v})$ and linear form $L(\mathbf{v})$ are defined as:
+\begin{align}
+    a(\mathbf{u}, \mathbf{v}) &= \int_\Omega \boldsymbol{\sigma}(\mathbf{u}) : \boldsymbol{\varepsilon}(\mathbf{v}) \, \text{d}\Omega \\
+    L(\mathbf{v}) &= \int_{\Gamma_N} \mathbf{t} \cdot \mathbf{v} \, \text{d}\Gamma
+\end{align}
+
+\subsubsection{Von Mises Yield Criterion and Safety Factor}
+From the computed displacement field $\mathbf{u}_h$, the deviatoric stress tensor $\mathbf{s}$ is obtained by subtracting the hydrostatic stress component:
+\begin{equation}
+    \mathbf{s} = \boldsymbol{\sigma}(\mathbf{u}_h) - \frac{1}{3} \text{tr}(\boldsymbol{\sigma}(\mathbf{u}_h)) \mathbf{I}
+\end{equation}
+
+The equivalent Von Mises stress at each integration point is evaluated based on the maximum distortion energy criterion:
+\begin{equation}
+    \sigma_{\text{vM}} = \sqrt{\frac{3}{2} \mathbf{s} : \mathbf{s}} = \sqrt{\frac{1}{2} \left[ (\sigma_{xx} - \sigma_{yy})^2 + (\sigma_{yy} - \sigma_{zz})^2 + (\sigma_{zz} - \sigma_{xx})^2 + 6(\tau_{xy}^2 + \tau_{yz}^2 + \tau_{zx}^2) \right]}
+\end{equation}
+
+The structural Safety Factor ($SF$) relative to the material yield strength $\sigma_y$ is evaluated as:
+\begin{equation}
+    SF = \frac{\sigma_y}{\sigma_{\text{vM, max}}} \ge [SF]_{\text{allow}}
+\end{equation}
+
+\end{document}
