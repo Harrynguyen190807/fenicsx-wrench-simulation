@@ -1,0 +1,230 @@
+\documentclass[12pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T5]{fontenc}
+\usepackage[vietnamese]{babel}
+\usepackage{amsmath,amssymb,amsfonts}
+\usepackage{geometry}
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{hyperref}
+
+\geometry{
+    a4paper,
+    left=30mm,
+    right=20mm,
+    top=25mm,
+    bottom=25mm
+}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{6pt}
+\renewcommand{\baselinestretch}{1.3}
+
+\title{\textbf{PHÂN TÍCH DỮ LIỆU THIẾT KẾ, CƠ SỞ LÝ THUYẾT \\ VÀ TÍNH TOÁN TRƯỚC MÔ PHỎNG (PRE-ANALYSIS)}}
+\author{Đồ án môn học: Phương Pháp Số (FEM)}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{Phân tích dữ liệu từ hồ sơ thiết kế CAD}
+
+\subsection{Chi tiết 1: Bu lông đầu lục giác (Hexagon Head Screw)}
+Dựa trên bản vẽ kỹ thuật \texttt{BOLT-M10-030} và mô hình \texttt{bolt.ipt}, các thông số hình học và vật liệu của bu lông được xác định như sau:
+\begin{itemize}
+    \item \textbf{Tiêu chuẩn chế tạo:} ISO 4017 -- Ren hệ mét $M10 \times 30$ (ren suốt, bước ren $p = 1.5\text{ mm}$, miền dung sai $6g$, chiều xoắn phải).
+    \item \textbf{Kích thước đầu lục giác:} Kích thước mở miệng (Across Flats -- A/F) $s = 16.00\text{ mm}$, chiều cao đầu bu lông $k = 6.40\text{ mm}$.
+    \item \textbf{Kích thước thân bu lông:} Chiều dài phần thân dưới đầu bu lông $l = 30.00\text{ mm}$, mép vát đuôi ren $1 \times 45^\circ$.
+    \item \textbf{Vật liệu và Cấp bền:} Thép cacbon tôi và ram (Quenched and Tempered), cấp bền \textbf{Property Class 8.8} theo tiêu chuẩn ISO 898-1:
+    \begin{itemize}
+        \item Mô đun đàn hồi (Young's modulus): $E_{\text{bolt}} = 210\text{ GPa} = 210,000\text{ MPa}$.
+        \item Hệ số Poisson: $\nu_{\text{bolt}} = 0.30$.
+        \item Giới hạn bền kéo danh nghĩa: $\sigma_{u,\text{bolt}} = 800\text{ MPa}$.
+        \item Giới hạn chảy quy ước: $\sigma_{y,\text{bolt}} = 0.8 \times \sigma_{u,\text{bolt}} = 640\text{ MPa}$.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Chi tiết 2: Cờ lê vòng miệng 16 mm (Combination Wrench)}
+Dựa trên bản vẽ kỹ thuật \texttt{WR-016-200} và mô hình \texttt{wrench\_16mm.ipt}, thông số hình học và vật liệu của cờ lê bao gồm:
+\begin{itemize}
+    \item \textbf{Kích thước bao và chiều dày:} Chiều dày đồng nhất $t = 6.50\text{ mm}$ ($Z \in [0; 6.50]\text{ mm}$), tổng chiều dài danh nghĩa $L_{\text{total}} = 199.55\text{ mm}$, khoảng cách tâm hai đầu $L_{cc} = 169.00\text{ mm}$, khối lượng tính toán $m = 148.7\text{ g}$.
+    \item \textbf{Đầu vòng (Six-point Ring Head):} Tâm đặt tại tọa độ $(14, 0)\text{ mm}$, bán kính ngoài $R_{\text{ring}} = 14.00\text{ mm}$. Lỗ lục giác đều 6 cạnh có kích thước mở miệng $A/F = 16.10^{+0.05}_{-0.00}\text{ mm}$ (khe hở lắp ghép danh nghĩa với đầu bu lông là $\Delta = 0.10\text{ mm}$).
+    \item \textbf{Đầu miệng (Open Jaw Head):} Tâm đặt tại tọa độ $(183, 0)\text{ mm}$, bán kính ngoài $R_{\text{open}} = 17.00\text{ mm}$. Rãnh ngàm mở rộng $16.10\text{ mm}$ nghiêng góc $15^\circ$ trong mặt phẳng $XY$, đáy ngàm bo tròn bán kính $R_{\text{root}} = 8.05\text{ mm}$ tại tâm cục bộ $(-3, 0)\text{ mm}$.
+    \item \textbf{Thân cờ lê (Shank Profile):} Biên dạng nửa trên nối qua các điểm tọa độ $(14, 14) \rightarrow (37, 7) \rightarrow (160, 7) \rightarrow (175, 15)\text{ mm}$ và đối xứng qua trục $Y = 0$. Bề rộng thân đoạn thẳng bằng $w = 14.00\text{ mm}$, bán kính góc lượn chuyển tiếp tại cổ cờ lê $(37, \pm 7)\text{ mm}$ và $(160, \pm 7)\text{ mm}$ là $R = 3.00\text{ mm}$.
+    \item \textbf{Vật liệu và Xử lý nhiệt:} Thép hợp kim Crom-Vanadi \textbf{AISI 6150 Cr-V}, tôi và ram đạt độ cứng $44\text{--}48\text{ HRC}$, mạ Niken/Crom mờ:
+    \begin{itemize}
+        \item Khối lượng riêng: $\rho = 7850\text{ kg/m}^3$.
+        \item Mô đun đàn hồi: $E_{\text{wrench}} = 210\text{ GPa} = 210,000\text{ MPa}$.
+        \item Hệ số Poisson: $\nu_{\text{wrench}} = 0.30$.
+        \item Giới hạn chảy ở độ cứng $44\text{--}48\text{ HRC}$: $\sigma_{y,\text{wrench}} \approx 1300\text{ MPa}$.
+    \end{itemize}
+\end{itemize}
+
+\begin{table}[h!]
+\centering
+\caption{Bảng tổng hợp thông số vật liệu đưa vào mô phỏng FEM}
+\vspace{4pt}
+\begin{tabular}{@{}lcccc@{}}
+\toprule
+\textbf{Chi tiết} & \textbf{Vật liệu} & \textbf{$E$ (MPa)} & \textbf{$\nu$} & \textbf{$\sigma_y$ (MPa)} \\ \midrule
+Bu lông $M10 \times 30$ & Carbon Steel Class 8.8 (ISO 898-1) & $210,000$ & $0.30$ & $640$ \\
+Cờ lê 16 mm & AISI 6150 Cr-V Steel (44--48 HRC) & $210,000$ & $0.30$ & $1300$ \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\section{Cơ sở lý thuyết và Tính toán trước mô phỏng}
+
+\subsection{Tính toán mô-men siết tiêu chuẩn của bu lông $M10 \times 1.5$}
+Theo tiêu chuẩn ren hệ mét ISO, đường kính trung bình $d_2$ và đường kính chân ren $d_3$ của bu lông $M10 \times 1.5$ ($d = 10\text{ mm}$, $p = 1.5\text{ mm}$) được xác định bởi:
+\begin{align}
+    d_2 &= d - 0.6495p = 10 - 0.6495 \times 1.5 = 9.026\text{ mm} \\
+    d_3 &= d - 1.2268p = 10 - 1.2268 \times 1.5 = 8.160\text{ mm}
+\end{align}
+
+Diện tích tiết diện chịu kéo danh nghĩa $A_s$ (Stress area) của phần thân ren là:
+\begin{equation}
+    A_s = \frac{\pi}{4} \left( \frac{d_2 + d_3}{2} \right)^2 = \frac{\pi}{4} \left( \frac{9.026 + 8.160}{2} \right)^2 \approx 58.0\text{ mm}^2
+\end{equation}
+
+Khi siết bu lông cấp bền 8.8 ($\sigma_{y,\text{bolt}} = 640\text{ MPa}$) đến $70\%$ giới hạn chảy theo khuyến nghị lắp ghép cơ khí, lực căng ban đầu (Preload force $F_M$) đạt giá trị:
+\begin{equation}
+    F_M = 0.7 \cdot \sigma_{y,\text{bolt}} \cdot A_s = 0.7 \times 640 \times 58.0 = 25,984\text{ N} \approx 26.0\text{ kN}
+\end{equation}
+
+Với hệ số ma sát mô-men tổng hợp $K = 0.19$ (bề mặt thép tiêu chuẩn), mô-men siết danh nghĩa $T_{\text{nom}}$ cần tác dụng lên đầu bu lông là:
+\begin{equation}
+    T_{\text{nom}} = K \cdot d \cdot F_M = 0.19 \times 0.010\text{ m} \times 25,984\text{ N} \approx 49.37\text{ N}\cdot\text{m} \approx 50\text{ N}\cdot\text{m}
+\end{equation}
+
+\subsection{Quy đổi các trường hợp tải trọng tác dụng (Load Cases)}
+Giả thiết người vận hành dùng đầu vòng của cờ lê (tâm tại $x_{\text{ring}} = 14\text{ mm}$) để vặn bu lông và đặt lực tay vuông góc với trục dọc cờ lê tại vùng đầu miệng (tâm tại $x_{\text{open}} = 183\text{ mm}$). Cánh tay đòn chịu lực hiệu dụng là:
+\begin{equation}
+    L_{cc} = x_{\text{open}} - x_{\text{ring}} = 183 - 14 = 169\text{ mm} = 0.169\text{ m}
+\end{equation}
+
+Quan hệ giữa lực tác dụng ở tay cầm $F_{\text{hand}}$ và mô-men xoắn $T$ là:
+\begin{equation}
+    F_{\text{hand}} = \frac{T}{L_{cc}}
+\end{equation}
+
+Để đánh giá toàn diện sự làm việc của kết cấu ở các chế độ khác nhau, ba trường hợp tải trọng được thiết lập như trong Bảng \ref{tab:load_cases}.
+
+\begin{table}[h!]
+\centering
+\caption{Các trường hợp tải trọng phân tích trong mô phỏng}
+\label{tab:load_cases}
+\vspace{4pt}
+\begin{tabular}{@{}clccc@{}}
+\toprule
+\textbf{Tổ hợp tải} & \textbf{Chế độ làm việc} & \textbf{Mô-men $T$ ($\text{N}\cdot\text{m}$)} & \textbf{Mô-men $T$ ($\text{N}\cdot\text{mm}$)} & \textbf{Lực tay $F_{\text{hand}}$ (N)} \\ \midrule
+Mức tải 1 & Siết nhẹ (60\% tải định mức) & $30.0$ & $30,000$ & $177.5$ \\
+Mức tải 2 & Siết tiêu chuẩn bu lông 8.8 & $50.0$ & $50,000$ & $295.9$ \\
+Mức tải 3 & Quá tải cực đại / Tháo ren kẹt & $80.0$ & $80,000$ & $473.4$ \\ \bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Tính toán kiểm chứng lý thuyết theo Sức bền vật liệu}
+
+\subsubsection{Ứng suất uốn danh nghĩa trên thân cờ lê}
+Xét mặt cắt nguy hiểm tại vị trí chuyển tiếp giữa thân cờ lê và đầu vòng ($x = 37\text{ mm}$, nơi có bề rộng $w = 14.0\text{ mm}$, chiều dày $t = 6.5\text{ mm}$ và góc lượn $R = 3.0\text{ mm}$). Khoảng cách từ điểm đặt lực tay ($x = 183\text{ mm}$) đến mặt cắt này là:
+\begin{equation}
+    L_b = 183 - 37 = 146\text{ mm}
+\end{equation}
+
+Mô-men quán tính chính trung tâm $I_z$ và mô-men chống uốn $W_z$ của tiết diện chữ nhật $t \times w$ là:
+\begin{align}
+    I_z &= \frac{t \cdot w^3}{12} = \frac{6.5 \times 14.0^3}{12} \approx 1486.33\text{ mm}^4 \\
+    W_z &= \frac{t \cdot w^2}{6} = \frac{6.5 \times 14.0^2}{6} \approx 212.33\text{ mm}^3
+\end{align}
+
+Tại mức tải tiêu chuẩn $T_2 = 50\text{ N}\cdot\text{m}$ ($F_2 = 295.9\text{ N}$), mô-men uốn tại mặt cắt $x = 37\text{ mm}$ và ứng suất uốn danh nghĩa cực đại ở mép ngoài ($y = \pm 7\text{ mm}$) là:
+\begin{align}
+    M_b &= F_2 \cdot L_b = 295.9 \times 146 = 43,201.4\text{ N}\cdot\text{mm} \\
+    \sigma_{\text{nom}} &= \frac{M_b}{W_z} = \frac{43,201.4}{212.33} \approx 203.46\text{ MPa}
+\end{align}
+
+Do ảnh hưởng của sự thay đổi tiết diện đột ngột tại góc lượn $R = 3\text{ mm}$ (tỉ số $R/w = 3/14 \approx 0.214$), hệ số tập trung ứng suất lý thuyết rơi vào khoảng $K_t \approx 1.45 \text{--} 1.60$. Khi đó, ứng suất cục bộ cực đại dự kiến tại góc lượn cổ cờ lê là:
+\begin{equation}
+    \sigma_{\max,\text{theory}} = K_t \cdot \sigma_{\text{nom}} \approx (1.45 \div 1.60) \times 203.46 \approx 295 \div 325\text{ MPa}
+\end{equation}
+
+Độ võng đầu cờ lê ước tính theo mô hình dầm công-xôn chiều dài $L_b = 146\text{ mm}$:
+\begin{equation}
+    u_{y,\text{shank}} = \frac{F_2 \cdot L_b^3}{3 E_{\text{wrench}} I_z} = \frac{295.9 \times 146^3}{3 \times 210,000 \times 1486.33} \approx 0.984\text{ mm}
+\end{equation}
+
+\subsubsection{Ứng suất xoắn trên thân bu lông}
+Khi chịu mô-men xoắn thuần túy $T_2 = 50,000\text{ N}\cdot\text{mm}$ trên phần thân bu lông có đường kính chịu lực tương đương $d_s = (d_2 + d_3)/2 \approx 8.60\text{ mm}$, mô-men chống xoắn độc cực $W_p$ và ứng suất tiếp cực đại $\tau_{\max}$ là:
+\begin{align}
+    W_p &= \frac{\pi d_s^3}{16} = \frac{\pi \times 8.60^3}{16} \approx 124.89\text{ mm}^3 \\
+    \tau_{\max} &= \frac{T_2}{W_p} = \frac{50,000}{124.89} \approx 400.35\text{ MPa}
+\end{align}
+
+Ứng suất tương đương Von Mises lý thuyết trên mặt ngoài thân bu lông khi chỉ xét xoắn thuần túy là:
+\begin{equation}
+    \sigma_{\text{vM, shank}} = \sqrt{3}\,\tau_{\max} \approx 693.4\text{ MPa}
+\end{equation}
+
+\subsection{Hệ phương trình cơ học vật rắn biến dạng và Công thức Phần tử hữu hạn (FEniCS)}
+
+\subsubsection{Phương trình vi phân chủ đạo (Strong Form)}
+Xét vật thể đàn hồi tuyến tính đẳng hướng chiếm miền không gian $\Omega \subset \mathbb{R}^3$ với biên $\partial \Omega = \Gamma_D \cup \Gamma_N$. Phương trình cân bằng tĩnh học khi bỏ qua lực khối ($\mathbf{f} = \mathbf{0}$) có dạng:
+\begin{equation}
+    -\nabla \cdot \boldsymbol{\sigma}(\mathbf{u}) = \mathbf{0} \quad \text{trong } \Omega
+\end{equation}
+
+Tensor biến dạng vô cùng bé Cauchy $\boldsymbol{\varepsilon}(\mathbf{u})$ liên hệ với vector chuyển vị $\mathbf{u} = (u_x, u_y, u_z)^T$ theo công thức:
+\begin{equation}
+    \boldsymbol{\varepsilon}(\mathbf{u}) = \frac{1}{2} \left( \nabla \mathbf{u} + (\nabla \mathbf{u})^T \right)
+\end{equation}
+
+Phương trình trạng thái (Định luật Hooke tổng quát) cho vật liệu đàn hồi tuyến tính đẳng hướng:
+\begin{equation}
+    \boldsymbol{\sigma}(\mathbf{u}) = \lambda\,\text{tr}(\boldsymbol{\varepsilon}(\mathbf{u}))\mathbf{I} + 2\mu\,\boldsymbol{\varepsilon}(\mathbf{u})
+\end{equation}
+trong đó $\mathbf{I}$ là tensor đơn vị bậc hai, và $\lambda, \mu$ là hai hằng số Lamé được tính từ mô đun đàn hồi $E$ và hệ số Poisson $\nu$:
+\begin{equation}
+    \lambda = \frac{E\nu}{(1 + \nu)(1 - 2\nu)}, \qquad \mu = G = \frac{E}{2(1 + \nu)}
+\end{equation}
+Với $E = 210,000\text{ MPa}$ và $\nu = 0.30$, ta có:
+\begin{equation}
+    \lambda = 121,153.85\text{ MPa}, \qquad \mu = 80,769.23\text{ MPa}
+\end{equation}
+
+Các điều kiện biên trên miền $\partial\Omega$:
+\begin{align}
+    \mathbf{u} &= \mathbf{0} \quad &&\text{trên biên chuyển vị cưỡng bức } \Gamma_D \text{ (vùng ngàm/tiếp xúc giữ cố định)} \\
+    \boldsymbol{\sigma}(\mathbf{u}) \cdot \mathbf{n} &= \mathbf{t} \quad &&\text{trên biên lực bề mặt } \Gamma_N \text{ (vùng đặt lực tay hoặc lực vặn)}
+\end{align}
+
+\subsubsection{Dạng yếu (Weak Form) giải trong FEniCSx}
+Gọi $V = \left\{ \mathbf{v} \in [H^1(\Omega)]^3 \;\middle|\; \mathbf{v}|_{\Gamma_D} = \mathbf{0} \right\}$ là không gian hàm thử (Trial/Test space) sử dụng phần tử tứ diện Lagrange bậc hai ($\mathcal{P}_2$ -- tương đương phần tử 10 nút \texttt{C3D10}). Nhân vô hướng phương trình cân bằng với hàm thử $\mathbf{v} \in V$ và tích phân từng phần theo công thức Green--Gauss trên miền $\Omega$, bài toán biến phân phát biểu thành:
+
+Tìm $\mathbf{u} \in V$ sao cho với mọi $\mathbf{v} \in V$:
+\begin{equation}
+    a(\mathbf{u}, \mathbf{v}) = L(\mathbf{v})
+\end{equation}
+với dạng song tuyến tính $a(\mathbf{u}, \mathbf{v})$ và phiếm hàm tuyến tính $L(\mathbf{v})$ được định nghĩa là:
+\begin{align}
+    a(\mathbf{u}, \mathbf{v}) &= \int_{\Omega} \boldsymbol{\sigma}(\mathbf{u}) : \boldsymbol{\varepsilon}(\mathbf{v}) \, \text{d}\Omega \\
+    L(\mathbf{v}) &= \int_{\Gamma_N} \mathbf{t} \cdot \mathbf{v} \, \text{d}\Gamma
+\end{align}
+
+\subsubsection{Tiêu chuẩn bền Von Mises và Hệ số an toàn}
+Từ trường chuyển vị nghiệm $\mathbf{u}_h$, tensor ứng suất lệch (Deviatoric stress tensor) $\mathbf{s}$ được tách ra khỏi thành phần thủy tĩnh:
+\begin{equation}
+    \mathbf{s} = \boldsymbol{\sigma}(\mathbf{u}_h) - \frac{1}{3}\,\text{tr}(\boldsymbol{\sigma}(\mathbf{u}_h))\mathbf{I}
+\end{equation}
+
+Ứng suất tương đương Von Mises tại mỗi điểm tích phân được xác định theo thuyết bền thế năng biến dạng đàn hồi hình dáng cực đại:
+\begin{equation}
+    \sigma_{\text{vM}} = \sqrt{\frac{3}{2}\,\mathbf{s} : \mathbf{s}} = \sqrt{\frac{1}{2}\left[(\sigma_{xx}-\sigma_{yy})^2 + (\sigma_{yy}-\sigma_{zz})^2 + (\sigma_{zz}-\sigma_{xx})^2 + 6(\tau_{xy}^2 + \tau_{yz}^2 + \tau_{zx}^2)\right]}
+\end{equation}
+
+Hệ số an toàn kết cấu (Safety Factor -- $SF$) theo giới hạn chảy $\sigma_y$ của vật liệu được đánh giá bởi:
+\begin{equation}
+    SF = \frac{\sigma_y}{\sigma_{\text{vM, max}}} \ge [SF]_{\text{allow}}
+\end{equation}
+
+\end{document}
