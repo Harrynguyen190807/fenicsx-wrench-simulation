@@ -8,17 +8,21 @@ Repository for the **Numerical Methods (FEM)** Major Assignment: 3D structural a
 
 ## 1. CAD Models & Engineering Drawings Overview
 
-### 3D CAD Model & Hex Bolt Engineering Drawing (`BOLT-M10-030`)
+### 1.1 3D CAD Part Models (`.ipt`)
 
-| 16 mm Combination Wrench 3D Model (`wrench_16mm.ipt`) | M10×30 Hex Head Screw Engineering Drawing (`BOLT-M10-030`) |
+| 16 mm Combination Wrench 3D Model ([`wrench_16mm.ipt`](cad/models/wrench_16mm.ipt)) | M10×30 Hex Head Screw 3D Model ([`bolt.ipt`](cad/models/bolt.ipt)) |
 | :---: | :---: |
-| ![16mm Combination Wrench 3D Preview](cad/previews/wrench_preview.png) | ![M10x30 Hex Bolt Engineering Drawing](cad/previews/bolt_drawing.png) |
+| ![16mm Combination Wrench 3D Preview](cad/previews/wrench_preview.png) | ![M10x30 Hex Bolt 3D Preview](cad/previews/bolt_preview.png) |
 
-### 16 mm Combination Wrench Engineering Drawings (`WR-016-200`, Sheets 1 & 2)
+### 1.2 2D Engineering Drawings (`BOLT-M10-030` & `WR-016-200`)
 
-| Wrench Engineering Drawing — Sheet 1 of 2 | Wrench Profile & Parameter Schedule — Sheet 2 of 2 |
+| M10×30 Hex Head Screw Engineering Drawing (`BOLT-M10-030` — [`bolt_drawing.pdf`](cad/drawings/bolt_drawing.pdf)) | 16 mm Combination Wrench Engineering Drawing — Sheet 1 (`WR-016-200` — [`wrench_16mm_engineering.pdf`](cad/drawings/wrench_16mm_engineering.pdf)) |
 | :---: | :---: |
-| ![Wrench Engineering Drawing Sheet 1](cad/previews/wrench_sheet-1.png) | ![Wrench Engineering Drawing Sheet 2](cad/previews/wrench_sheet-2.png) |
+| ![M10x30 Hex Bolt Engineering Drawing](cad/previews/bolt_drawing.png) | ![Wrench Engineering Drawing Sheet 1](cad/previews/wrench_sheet-1.png) |
+
+| 16 mm Combination Wrench Profile & Parameter Schedule — Sheet 2 of 2 (`WR-016-200`) |
+| :---: |
+| ![Wrench Engineering Drawing Sheet 2](cad/previews/wrench_sheet-2.png) |
 
 ---
 
@@ -39,6 +43,7 @@ fenicsx-wrench-simulation/
 │   │   ├── wrench_16mm_engineering.idw      # Native Inventor drawing for 16 mm wrench
 │   │   └── wrench_16mm_engineering.pdf      # Exported 2-sheet PDF engineering drawing (WR-016-200)
 │   ├── previews/                            # Rendered CAD previews & engineering drawing images (.png)
+│   │   ├── bolt_preview.png                 # 3D isometric render of bolt.ipt
 │   │   ├── bolt_drawing.png                 # BOLT-M10-030 engineering drawing sheet
 │   │   ├── wrench_preview.png               # 3D isometric render of wrench_16mm.ipt
 │   │   ├── wrench_sheet-1.png               # WR-016-200 engineering drawing (Sheet 1 of 2)
